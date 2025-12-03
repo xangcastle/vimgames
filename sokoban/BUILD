@@ -13,5 +13,5 @@ cc_library(
 cc_binary(
     name = "sokoban",
     srcs = ["main.cpp"],
-    deps = [":sokoban_lib"],
+    deps = [":sokoban_lib", "//common:launcher"],
 )

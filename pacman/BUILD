@@ -15,6 +15,6 @@ cc_library(
 cc_binary(
     name = "pacman",
     srcs = ["main.cpp"],
-    deps = [":pacman_lib"],
+    deps = [":pacman_lib", "//common:launcher"],
     data = glob(["maps/*.txt"]),
 )

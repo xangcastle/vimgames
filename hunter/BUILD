@@ -13,5 +13,5 @@ cc_library(
 cc_binary(
     name = "hunter",
     srcs = ["main.cpp"],
-    deps = [":hunter_lib"],
+    deps = [":hunter_lib", "//common:launcher"],
 )

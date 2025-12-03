@@ -13,5 +13,5 @@ cc_library(
 cc_binary(
     name = "galaga",
     srcs = ["main.cpp"],
-    deps = [":galaga_lib"],
+    deps = [":galaga_lib", "//common:launcher"],
 )
