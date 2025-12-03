@@ -1,0 +1,9 @@
+errors.log
+pacvim
+*~
+*.swp
+*.swo
+.deps
+*.o
+.idea
+bazel-*
