@@ -8,10 +8,13 @@ cc_library(
     hdrs = glob(["*.h"]),
     includes = ["."],
     linkopts = ["-lncurses", "-lpthread"],
+    defines = ["MAPS_LOCATION='\"sokoban/maps\"'"],
+    data = glob(["maps/*.txt"]),
 )
 
 cc_binary(
     name = "sokoban",
     srcs = ["main.cpp"],
     deps = [":sokoban_lib", "//common:launcher"],
+    data = glob(["maps/*.txt"]),
 )
