@@ -7,3 +7,4 @@ pacvim
 *.o
 .idea
 bazel-*
+.clwb
