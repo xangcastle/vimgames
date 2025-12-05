@@ -7,7 +7,7 @@ cc_library(
     srcs = glob(["*.cpp"], exclude = ["main.cpp"]),
     hdrs = glob(["*.h"]),
     includes = ["."],
-    linkopts = ["-lncurses", "-lpthread"],
+    deps = ["//engine"],
 )
 
 cc_binary(
