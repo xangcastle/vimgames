@@ -38,6 +38,12 @@ Texture2D texDemon;
 Texture2D texHeart;
 Font customFont;
 
+// Audio
+Sound sndShoot;
+Sound sndHit;
+Sound sndDie;
+Music musicBg;
+
 // Grid dimensions match game.cpp
 const int GRID_WIDTH = 60;
 const int GRID_HEIGHT = 25;
@@ -49,6 +55,7 @@ void init_renderer() {
   // Padding
   InitWindow(GRID_WIDTH * CELL_WIDTH + 40, (GRID_HEIGHT + 4) * CELL_HEIGHT + 40,
              "Hunter Vim");
+  InitAudioDevice();
   SetTargetFPS(60);
 
   // Load Font
@@ -77,6 +84,14 @@ void init_renderer() {
   ImageResize(&imgHeart, 40, 40);
   texHeart = LoadTextureFromImage(imgHeart);
   UnloadImage(imgHeart);
+
+  // Load Audio
+  sndShoot = LoadSound("hunter/assets/shoot.wav");
+  sndHit = LoadSound("hunter/assets/hit.wav");
+  sndDie = LoadSound("hunter/assets/die.wav");
+  musicBg = LoadMusicStream("hunter/assets/music.wav");
+  musicBg.looping = true;
+  PlayMusicStream(musicBg);
 }
 
 void close_renderer() {
@@ -84,8 +99,25 @@ void close_renderer() {
   UnloadTexture(texGhost);
   UnloadTexture(texDemon);
   UnloadTexture(texHeart);
+  UnloadTexture(texHeart);
+
+  UnloadSound(sndShoot);
+  UnloadSound(sndHit);
+  UnloadSound(sndDie);
+  UnloadMusicStream(musicBg);
+  CloseAudioDevice();
+
   // UnloadFont(customFont); // Do not unload default font
   CloseWindow();
+}
+
+void play_sound(const std::string &sound) {
+  if (sound == "shoot")
+    PlaySound(sndShoot);
+  else if (sound == "hit")
+    PlaySound(sndHit);
+  else if (sound == "die")
+    PlaySound(sndDie);
 }
 
 void draw_entity(int x, int y, const std::string &text) {
@@ -273,6 +305,7 @@ void clear_screen() {
 void refresh_screen() {
   if (!IsWindowReady())
     return;
+  UpdateMusicStream(musicBg);
   EndDrawing();
 }
 

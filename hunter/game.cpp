@@ -77,32 +77,36 @@ void update_game() {
   tick++;
 
   // Spawn enemies occasionally
-  // Increase difficulty by spawning faster as score increases?
-  int spawn_rate = 40;
+  // Adjusted for 60 FPS (was 20 FPS, so 3x multiplier)
+  int spawn_rate = 120;
   if (score > 500)
-    spawn_rate = 30;
+    spawn_rate = 90;
   if (score > 1000)
-    spawn_rate = 20;
+    spawn_rate = 60;
   if (score > 2000)
-    spawn_rate = 10;
+    spawn_rate = 30;
 
   if (tick % spawn_rate == 0) {
     spawn_enemy();
   }
 
   // Move enemies
-  if (tick % 10 == 0) {
+  if (tick % 30 == 0) {
     for (auto &e : enemies) {
       if (e.active) {
         e.y++;
         if (e.y >= HEIGHT - 1) {
           e.active = false;
           lives--;
-          if (lives <= 0)
-            game_over = true;
+          play_sound("hit");
         }
       }
     }
+  }
+
+  if (lives <= 0) {
+    game_over = true;
+    play_sound("die");
   }
 }
 
@@ -119,6 +123,7 @@ void handle_input(int ch) {
         if (e.active && e.is_word && e.trigger_word == command_buffer) {
           e.active = false;
           score += 50;
+          play_sound("shoot");
         }
       }
       command_mode = false;
@@ -153,6 +158,7 @@ void handle_input(int ch) {
     if (target_index != -1) {
       enemies[target_index].active = false;
       score += 10;
+      play_sound("shoot");
     }
 
     find_mode = false;
@@ -341,7 +347,8 @@ int hunter_main(int /*argc*/, char ** /*argv*/) {
       update_game();
       draw_game();
 
-      std::this_thread::sleep_for(std::chrono::milliseconds(50));
+      // Raylib handles timing with SetTargetFPS(60) in init_renderer
+      // std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 
     game_over_screen();

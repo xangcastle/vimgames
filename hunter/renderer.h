@@ -14,6 +14,7 @@ void draw_text_centered_colored(int y, const std::string &text, int color);
 void draw_box(int width, int height);
 void clear_screen();
 void refresh_screen();
+void play_sound(const std::string &sound);
 int get_input();
 bool renderer_should_close();
 
