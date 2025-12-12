@@ -4,14 +4,18 @@ package(default_visibility = ["//visibility:public"])
 
 cc_library(
     name = "hunter_lib",
-    srcs = glob(["*.cpp"], exclude = ["main.cpp"]),
+    srcs = [
+        "game.cpp",
+        "renderer.cpp",
+    ],
     hdrs = glob(["*.h"]),
     includes = ["."],
-    linkopts = ["-lncurses", "-lpthread"],
+    deps = ["@raylib//:raylib"],
 )
 
 cc_binary(
     name = "hunter",
     srcs = ["main.cpp"],
     deps = [":hunter_lib", "//common:launcher"],
+    data = glob(["assets/*"]),
 )
