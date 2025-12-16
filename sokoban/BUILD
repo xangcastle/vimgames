@@ -7,14 +7,16 @@ cc_library(
     srcs = glob(["*.cpp"], exclude = ["main.cpp"]),
     hdrs = glob(["*.h"]),
     includes = ["."],
-    linkopts = ["-lncurses", "-lpthread"],
+    linkopts = [],
     defines = ["MAPS_LOCATION='\"sokoban/maps\"'"],
-    data = glob(["maps/*.txt"]),
+    deps = [
+        "@raylib//:raylib",
+    ],
 )
 
 cc_binary(
     name = "sokoban",
     srcs = ["main.cpp"],
-    deps = [":sokoban_lib", "//common:launcher"],
-    data = glob(["maps/*.txt"]),
+    deps = [":sokoban_lib", "//common:launcher", "@raylib//:raylib"],
+    data = glob(["maps/*.txt", "assets/*.png"]),
 )

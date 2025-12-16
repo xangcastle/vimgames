@@ -1,100 +1,87 @@
 #include "renderer.h"
-#include "globals.h"
-#include <ncurses.h>
-#include <clocale>
+#include "raylib.h"
 
-void init_renderer()
-{
-    setlocale(LC_ALL, "");
-    initscr();
-    cbreak();
-    noecho();
-    keypad(stdscr, TRUE);
-    curs_set(0);
-    define_colors();
+// Assets
+Texture2D texWall;
+Texture2D texCrate;
+Texture2D texTarget;
+Texture2D texFilledTarget;
+Texture2D texPlayer;
+
+const int CELL_SIZE = 40;
+const int OFFSET_X = 20;
+const int OFFSET_Y = 20;
+
+void init_renderer() {
+  InitWindow(800, 600, "Sokoban Vim");
+  SetTargetFPS(60);
+
+  texWall = LoadTexture("sokoban/assets/wall.png");
+  texCrate = LoadTexture("sokoban/assets/crate.png");
+  texTarget = LoadTexture("sokoban/assets/target.png");
+  texFilledTarget = LoadTexture("sokoban/assets/filled_target.png");
+  texPlayer = LoadTexture("sokoban/assets/player.png");
+
+  // Pixel perfect
+  SetTextureFilter(texWall, TEXTURE_FILTER_POINT);
+  SetTextureFilter(texCrate, TEXTURE_FILTER_POINT);
+  SetTextureFilter(texTarget, TEXTURE_FILTER_POINT);
+  SetTextureFilter(texPlayer, TEXTURE_FILTER_POINT);
 }
 
-void close_renderer()
-{
-    endwin();
+void close_renderer() {
+  UnloadTexture(texWall);
+  UnloadTexture(texCrate);
+  UnloadTexture(texTarget);
+  UnloadTexture(texFilledTarget);
+  UnloadTexture(texPlayer);
+  CloseWindow();
 }
 
-void define_colors()
-{
-    start_color();
-    init_pair(1, COLOR_RED, COLOR_BLACK);
-    init_pair(2, COLOR_GREEN, COLOR_BLACK);
-    init_pair(3, COLOR_YELLOW, COLOR_BLACK);
-    init_pair(4, COLOR_BLUE, COLOR_BLACK);
-    init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
-    init_pair(6, COLOR_CYAN, COLOR_BLACK);
-    init_pair(7, COLOR_WHITE, COLOR_BLACK);
+void clear_screen() {
+  BeginDrawing();
+  ClearBackground(BLACK);
 }
 
-void draw_entity(int x, int y, const std::string& text)
-{
-    // x * 2 for wider grid, apply offsets
-    mvprintw(y + OFFSET_Y, x * 2 + OFFSET_X, "%s", text.c_str());
+void refresh_screen() { EndDrawing(); }
+
+int get_input() { return GetCharPressed(); }
+
+bool is_key_pressed(int key) { return IsKeyPressed(key); }
+
+bool window_should_close() { return WindowShouldClose(); }
+
+void draw_texture(int x, int y, const Texture2D &tex) {
+  DrawTexture(tex, x * CELL_SIZE + OFFSET_X, y * CELL_SIZE + OFFSET_Y, WHITE);
 }
 
-void draw_entity_colored(int x, int y, const std::string& text, int color)
-{
-    attron(COLOR_PAIR(color));
-    mvprintw(y + OFFSET_Y, x * 2 + OFFSET_X, "%s", text.c_str());
-    attroff(COLOR_PAIR(color));
+void draw_entity(int x, int y, EntityType type) {
+  switch (type) {
+  case ENTITY_WALL:
+    draw_texture(x, y, texWall);
+    break;
+  case ENTITY_CRATE:
+    draw_texture(x, y, texCrate);
+    break;
+  case ENTITY_TARGET:
+    draw_texture(x, y, texTarget);
+    break;
+  case ENTITY_FILLED_TARGET:
+    draw_texture(x, y, texFilledTarget);
+    break;
+  case ENTITY_PLAYER:
+    draw_texture(x, y, texPlayer);
+    break;
+  default:
+    break;
+  }
 }
 
-void draw_text(int x, int y, const std::string& text)
-{
-    mvprintw(y, x, "%s", text.c_str());
+void draw_text(int x, int y, const char *text, int fontSize, Color color) {
+  DrawText(text, x, y, fontSize, color);
 }
 
-void draw_text_colored(int x, int y, const std::string& text, int color)
-{
-    attron(COLOR_PAIR(color));
-    mvprintw(y, x, "%s", text.c_str());
-    attroff(COLOR_PAIR(color));
-}
-
-void clear_screen()
-{
-    clear();
-}
-
-void refresh_screen()
-{
-    refresh();
-}
-
-int get_input()
-{
-    return getch();
-}
-
-void draw_box(int width, int height)
-{
-    // Top border
-    mvaddch(0, 0, ACS_ULCORNER);
-    for (int i = 1; i < width - 1; i++) mvaddch(0, i, ACS_HLINE);
-    mvaddch(0, width - 1, ACS_URCORNER);
-
-    // Side borders
-    for (int i = 1; i < height - 1; i++)
-    {
-        mvaddch(i, 0, ACS_VLINE);
-        mvaddch(i, width - 1, ACS_VLINE);
-    }
-
-    // Bottom border
-    mvaddch(height - 1, 0, ACS_LLCORNER);
-    for (int i = 1; i < width - 1; i++) mvaddch(height - 1, i, ACS_HLINE);
-    mvaddch(height - 1, width - 1, ACS_LRCORNER);
-}
-
-void draw_vim_keys(int y, int x)
-{
-    mvaddstr(y++, x, " .---. .---. .---. .---.");
-    mvaddstr(y++, x, " | h | | j | | k | | l |");
-    mvaddstr(y++, x, " '---' '---' '---' '---'");
-    mvaddstr(y++, x, " Left  Down   Up   Right");
+void draw_text_centered(int y, const char *text, int fontSize, Color color) {
+  int w = MeasureText(text, fontSize);
+  DrawText(text, 400 - w / 2, y, fontSize, color);
 }
